@@ -115,7 +115,7 @@ function izRenderNav(activePage, marcaId){
   function link(href,label,page){ return '<a href="'+href+'" class="iz-link'+(page===activePage?' active':'')+'">'+label+'</a>'; }
   var qs = navMarca ? ('?marca='+navMarca.id) : ('?marca='+MARCAS.itenez.id);
   var badge = navMarca ? ('<a href="index.html" class="iz-marca-badge" title="Cambiar de marca" style="background:'+navMarca.color+'1c;color:'+navMarca.colorOsc+'">'+izIcon(navMarca.icon,14)+' <span class="iz-badge-txt">'+navMarca.nombre+'</span></a>') : '';
-  var marcaMenu = '<div class="iz-nav-products"><a href="catalogo.html'+qs+'" class="iz-link'+(activePage==='productos'?' active':'')+'">PRODUCTOS</a><button class="iz-nav-caret" type="button" onclick="izToggleMarcaMenu(event)" aria-label="Elegir marca">'+izIcon('chevronDown',14)+'</button><div class="iz-marca-menu" id="iz-marca-menu">'+MARCA_ORDER.map(function(id){ var m=MARCAS[id]; return '<a href="catalogo.html?marca='+id+'">'+izIcon(m.icon,15)+' '+m.nombre+'</a>'; }).join('')+'</div></div>';
+  var marcaMenu = '<div class="iz-nav-products"><button type="button" class="iz-link iz-nav-products-btn'+(activePage==='productos'?' active':'')+'" onclick="izToggleMarcaMenu(event)">PRODUCTOS '+izIcon('chevronDown',14)+'</button><div class="iz-marca-menu" id="iz-marca-menu">'+MARCA_ORDER.map(function(id){ var m=MARCAS[id]; return '<a href="catalogo.html?marca='+id+'">'+izIcon(m.icon,15)+' '+m.nombre+'</a>'; }).join('')+'</div></div>';
   nav.innerHTML = '<div id="iz-nav"><div class="iz-brandwrap"><a href="index.html" class="iz-logo"><img src="logo-came.png" alt="CAME"></a>'+badge+'</div><div class="iz-links">'
     + link('index.html'+qs,'INICIO','home')
     + marcaMenu
