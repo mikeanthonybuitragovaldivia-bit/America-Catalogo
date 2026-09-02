@@ -453,13 +453,15 @@ function izRenderHome(marca, data, carruselSlides, catImgs){
   // el home de cada marca arranca directo en la franja de confianza.
   var html = '';
 
+  html += '<div class="iz-marca-hero" style="--m-color:'+marca.color+';--m-color-osc:'+marca.colorOsc+'"><span class="iz-marca-hero-emoji">'+marca.emoji+'</span><h1>'+marca.nombreCompleto+'</h1><p>'+marca.tagline+'</p></div>';
+
   html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
 
   html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Explora por categoría</h2></div><div class="iz-cats">';
   izGetCategories(data, marca).forEach(function(cat){
     var img = catImgs[cat];
     var bg = img ? (' style="background-image:url(\''+img+'\')"') : '';
-    html += '<a class="iz-cat-card iz-reveal'+(img?'':' iz-cat-noimg')+'" href="catalogo.html?marca='+marca.id+'&cat='+encodeURIComponent(cat)+'"'+bg+'><span class="iz-icon">'+(marca.catIcons[cat]||'🌿')+'</span><div class="iz-cat-info"><span class="iz-cat-name">'+cat+'</span><span class="iz-cat-count">'+(counts[cat]||0)+' productos</span></div></a>';
+    html += '<a class="iz-cat-card iz-reveal'+(img?'':' iz-cat-noimg')+'" href="catalogo.html?marca='+marca.id+'&cat='+encodeURIComponent(cat)+'"'+bg+'><div class="iz-cat-info"><span class="iz-cat-name">'+cat+'</span><span class="iz-cat-count">'+(counts[cat]||0)+' productos</span></div></a>';
   });
   html += '</div></div>';
 
