@@ -103,10 +103,10 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;color:var(--texto);backgro
 .iz-cat-card.iz-cat-noimg .iz-cat-count{color:#8a8570;}
 
 /* --- Encabezado con el nombre de la marca (home de cada marca) --- */
-.iz-marca-hero{text-align:center;padding:56px 6vw 40px;background:linear-gradient(180deg,var(--m-color) 0%,var(--m-color-osc) 100%);color:#fff;}
+.iz-marca-hero{text-align:center;padding:48px 6vw 36px;background:#fff;border-bottom:3px solid var(--m-color);}
 .iz-marca-hero-emoji{font-size:40px;display:block;margin-bottom:10px;}
-.iz-marca-hero h1{margin:0 0 8px;font-size:clamp(26px,4vw,38px);}
-.iz-marca-hero p{margin:0;opacity:.88;font-size:15px;}
+.iz-marca-hero h1{margin:0 0 8px;font-size:clamp(26px,4vw,38px);color:var(--m-color-osc);}
+.iz-marca-hero p{margin:0;color:#8a8570;font-size:15px;}
 .iz-marca-hero-logo{max-width:min(320px,70%);height:auto;margin-bottom:14px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.15));}
 
 /* --- Selector de marcas (pantalla de bienvenida) --- */
