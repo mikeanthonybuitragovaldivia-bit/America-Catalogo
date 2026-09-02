@@ -231,8 +231,8 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;color:var(--texto);backgro
   #iz-nav .iz-links.open{max-height:400px;opacity:1;pointer-events:auto;}
   #iz-nav .iz-links a.iz-link,#iz-nav .iz-links .iz-nav-products-btn{padding:12px 4px;width:100%;justify-content:space-between;border-bottom:1px solid var(--borde);font-size:15px;}
   #iz-nav a.iz-link::after{display:none;}
-  .iz-nav-products{width:100%;}
-  .iz-nav-products-btn{width:100%;}
+  .iz-nav-products{width:100%;flex-direction:column;align-items:stretch;}
+  .iz-nav-products-btn{width:100%;justify-content:space-between;}
   .iz-marca-menu{position:static;transform:none;box-shadow:none;border:none;padding:0 0 0 14px;min-width:0;margin-top:2px;}
   #iz-cart-btn .iz-cart-label{display:none;}
   #iz-cart-btn{padding:9px 12px;}
