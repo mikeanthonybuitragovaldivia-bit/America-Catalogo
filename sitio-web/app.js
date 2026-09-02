@@ -1,35 +1,89 @@
 (function(){
-var SHEET_ID = "1MwF-A4HdN6tqvQM1-hyGAScNGdmvURGyiGvbllclLjU";
-var CSV_URL = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/export?format=csv";
-var CARRUSEL_SHEET_ID = "1nqYKBMZ-VjAWEgIKP7ohxh1Uugl2ayIDImbWK5CV6JA";
-var CARRUSEL_CSV_URL = "https://docs.google.com/spreadsheets/d/"+CARRUSEL_SHEET_ID+"/export?format=csv";
-var CATEGORIAS_SHEET_ID = "1EiAiZv9SmLIpW-0aqGktu8jRWd8y9HrnyE350Ejx1Cc";
-var CATEGORIAS_CSV_URL = "https://docs.google.com/spreadsheets/d/"+CATEGORIAS_SHEET_ID+"/export?format=csv";
 var WHATSAPP_NUMBER = "59167370803"; // EDITAR: reemplazar por el numero real de Mike (con codigo de pais, sin +)
-var CAT_ICONS = {"Hidrolatos":"💧","Tinturas Naturales":"🌿","Aceites Esenciales":"🌸","IVI SY":"🧴","Oleatos y Macerados":"🫒","Aceites Prensados en Frío":"🥥","Sentido Natural":"🍃","Vinagres":"🍾","Harinas":"🌾","Sales y Otros":"🧂"};
-var CAT_ORDER = ["Hidrolatos","Tinturas Naturales","Aceites Esenciales","IVI SY","Oleatos y Macerados","Aceites Prensados en Frío","Sentido Natural","Vinagres","Harinas","Sales y Otros"];
 
-// Genera la lista de categorias a partir de los datos reales del Sheet: respeta el orden
-// conocido de arriba y agrega automaticamente al final cualquier categoria nueva que Mike
-// escriba en la columna "categoria" del Google Sheet, sin necesidad de tocar este archivo.
-function izGetCategories(data){
+// --- Marcas ------------------------------------------------------------
+// CAME es la marca sombrilla (el logo del header). Cada marca de abajo es
+// una tienda independiente con sus propias hojas de Google Sheets para
+// Productos, Categorias (fotos de portada) y Carrusel de inicio.
+// Para agregar productos/categorias a una marca: abre su Sheet de
+// "Productos" (o "Categorias") en la carpeta de Drive "Catálogo América -
+// Marcas / <NOMBRE MARCA>" y agrega filas ahi. El sitio se actualiza solo,
+// sin tocar este archivo.
+var MARCAS = {
+  itenez: {
+    id:'itenez', nombre:'Iténez', nombreCompleto:'Iténez Productos Orientales',
+    tagline:'Cuidado natural para toda la familia',
+    emoji:'🌿', color:'#3f6b4a', colorOsc:'#28422e',
+    sheetProductos:'1MwF-A4HdN6tqvQM1-hyGAScNGdmvURGyiGvbllclLjU',
+    sheetCategorias:'1EiAiZv9SmLIpW-0aqGktu8jRWd8y9HrnyE350Ejx1Cc',
+    sheetCarrusel:'1nqYKBMZ-VjAWEgIKP7ohxh1Uugl2ayIDImbWK5CV6JA',
+    catOrder:["Hidrolatos","Tinturas Naturales","Aceites Esenciales","IVI SY","Oleatos y Macerados","Aceites Prensados en Frío","Sentido Natural","Vinagres","Harinas","Sales y Otros"],
+    catIcons:{"Hidrolatos":"💧","Tinturas Naturales":"🌿","Aceites Esenciales":"🌸","IVI SY":"🧴","Oleatos y Macerados":"🫒","Aceites Prensados en Frío":"🥥","Sentido Natural":"🍃","Vinagres":"🍾","Harinas":"🌾","Sales y Otros":"🧂"}
+  },
+  natumis: {
+    id:'natumis', nombre:'Natumis', nombreCompleto:'Natumis',
+    tagline:'Jabones y velas artesanales',
+    emoji:'🌱', color:'#1f8a55', colorOsc:'#155c3a',
+    sheetProductos:'12jAmdaXPlVycNOjVcyVOvAbztSg48_Ab5PKCrRbXZSA',
+    sheetCategorias:'1iM_fo8FWIfXiwxx3PbkuafRy2nQFPt1oN2UsOWn0rdk',
+    sheetCarrusel:null,
+    catOrder:['Jabones','Velas'], catIcons:{'Jabones':'🧼','Velas':'🕯️'}
+  },
+  gimnasio: {
+    id:'gimnasio', nombre:'Gimnasio', nombreCompleto:'Gimnasio',
+    tagline:'Muy pronto en tu catálogo',
+    emoji:'🏋️', color:'#c9532f', colorOsc:'#8a3a20',
+    sheetProductos:'13qa1MfuE8ZDKkIdZsReWDxgew5M_yP6qIgPSRP2cEO8',
+    sheetCategorias:'1c2pyKZhEqh1XRI7ZoA_PYLPMZzUHTtLrFpBVU_p50oI',
+    sheetCarrusel:null,
+    catOrder:[], catIcons:{}
+  },
+  ropa: {
+    id:'ropa', nombre:'Ropa', nombreCompleto:'Ropa',
+    tagline:'Muy pronto en tu catálogo',
+    emoji:'👕', color:'#3f57c9', colorOsc:'#2a3a8a',
+    sheetProductos:'1QRe6YwIiZDhDYjk1RMEa8FEnklUA_8E0zdyocsWzhYE',
+    sheetCategorias:'1I9rAz5nLLthdnazBtG_3B_zArpXQraaRjpodmkm1mG4',
+    sheetCarrusel:null,
+    catOrder:[], catIcons:{}
+  }
+};
+var MARCA_ORDER = ['itenez','natumis','gimnasio','ropa'];
+
+function izCsvUrl(sheetId){ return "https://docs.google.com/spreadsheets/d/"+sheetId+"/export?format=csv"; }
+
+// Lee ?marca=xxx de la URL. Devuelve null si no hay marca valida (pantalla de bienvenida).
+function izActiveMarcaId(){
+  var params = new URLSearchParams(window.location.search);
+  var m = params.get('marca');
+  return (m && MARCAS[m]) ? m : null;
+}
+
+// Genera la lista de categorias de una marca a partir de sus datos reales del Sheet:
+// respeta el orden conocido (catOrder) y agrega automaticamente al final cualquier
+// categoria nueva que se escriba en la columna "categoria" del Sheet de Productos.
+function izGetCategories(data, marca){
+  var order = (marca && marca.catOrder) || [];
   var present = {}; var extras = [];
   data.forEach(function(p){
     var cat = (p.categoria||'').trim();
     if(!cat) return;
-    if(!present[cat]){ present[cat]=true; if(CAT_ORDER.indexOf(cat)===-1) extras.push(cat); }
+    if(!present[cat]){ present[cat]=true; if(order.indexOf(cat)===-1) extras.push(cat); }
   });
   extras.sort();
-  return CAT_ORDER.concat(extras);
+  return order.concat(extras);
 }
 
-function izRenderNav(activePage){
+function izRenderNav(activePage, marcaId){
   var nav = document.getElementById('nav-placeholder');
   if(!nav) return;
+  var navMarca = MARCAS[marcaId];
   function link(href,label,page){ return '<a href="'+href+'" class="iz-link'+(page===activePage?' active':'')+'">'+label+'</a>'; }
-  nav.innerHTML = '<div id="iz-nav"><a href="index.html" class="iz-logo">Iténez Productos Orientales</a><div class="iz-links">'
-    + link('index.html','INICIO','home')
-    + link('catalogo.html','PRODUCTOS','productos')
+  var qs = navMarca ? ('?marca='+navMarca.id) : ('?marca='+MARCAS.itenez.id);
+  var badge = navMarca ? ('<a href="index.html" class="iz-marca-badge" title="Cambiar de marca" style="background:'+navMarca.color+'1c;color:'+navMarca.colorOsc+'">'+navMarca.emoji+' <span class="iz-badge-txt">'+navMarca.nombre+'</span></a>') : '';
+  nav.innerHTML = '<div id="iz-nav"><div class="iz-brandwrap"><a href="index.html" class="iz-logo"><img src="logo-came.png" alt="CAME"></a>'+badge+'</div><div class="iz-links">'
+    + link('index.html'+qs,'INICIO','home')
+    + link('catalogo.html'+qs,'PRODUCTOS','productos')
     + link('contacto.html','CONTACTO','contacto')
     + '<button id="iz-cart-btn" onclick="izOpenCart()">🛒 Pedido<span id="iz-cart-count">0</span></button></div></div>';
   var navEl = document.getElementById('iz-nav');
@@ -109,40 +163,47 @@ function izGetVariants(p){
   return vs;
 }
 
-function izLoadData(cb){
-  if(window.__izProducts){ cb(window.__izProducts); return; }
-  fetch(CSV_URL).then(function(r){ return r.text(); }).then(function(txt){
+window.__izCache = {};
+function izCacheFor(marcaId){ return (window.__izCache[marcaId] = window.__izCache[marcaId] || {}); }
+
+function izLoadMarcaData(marca, cb){
+  var cache = izCacheFor(marca.id);
+  if(cache.products){ cb(cache.products); return; }
+  fetch(izCsvUrl(marca.sheetProductos)).then(function(r){ return r.text(); }).then(function(txt){
     var data = izParseCSV(txt);
-    data.forEach(function(p){ p.imagen_url = izFixImgUrl(p.imagen_url); p.variantes = izGetVariants(p); });
-    window.__izProducts = data;
+    data.forEach(function(p){ p.imagen_url = izFixImgUrl(p.imagen_url); p.variantes = izGetVariants(p); p._marca = marca.nombreCompleto; });
+    cache.products = data;
     cb(data);
   }).catch(function(err){
     var root=document.getElementById('app-root');
-    if(root) root.innerHTML='<p style="padding:60px 6vw;text-align:center;color:#c94b4b;">No se pudieron cargar los productos. Verifica que el Google Sheet este compartido como "Cualquiera con el enlace - Lector".</p>';
+    if(root) root.innerHTML='<p style="padding:60px 6vw;text-align:center;color:#c94b4b;">No se pudieron cargar los productos de '+marca.nombre+'. Verifica que su Google Sheet este compartido como "Cualquiera con el enlace - Lector".</p>';
     console.error(err);
   });
 }
 
-function izLoadCarouselData(cb){
-  if(window.__izCarrusel){ cb(window.__izCarrusel); return; }
-  fetch(CARRUSEL_CSV_URL).then(function(r){ return r.text(); }).then(function(txt){
+function izLoadMarcaCarousel(marca, cb){
+  if(!marca.sheetCarrusel){ cb([]); return; }
+  var cache = izCacheFor(marca.id);
+  if(cache.carrusel){ cb(cache.carrusel); return; }
+  fetch(izCsvUrl(marca.sheetCarrusel)).then(function(r){ return r.text(); }).then(function(txt){
     var rows = izParseCSV(txt);
     rows.forEach(function(r){ r.imagen_url = izFixImgUrl(r.imagen_url); });
     rows.sort(function(a,b){ return (parseFloat(a.orden)||99) - (parseFloat(b.orden)||99); });
     var slides = rows.filter(function(r){ return r.imagen_url; }).map(function(r){
-      return { img:r.imagen_url, title:r.titulo||'', text:r.texto||'', ctaText:r.cta_texto||'Ver catálogo', cat:r.cta_cat||'' };
+      return { img:r.imagen_url, title:r.titulo||'', text:r.texto||'', ctaText:r.cta_texto||'Ver catálogo', cat:r.cta_cat||'', link:(r.cta_link||'').trim() };
     });
-    window.__izCarrusel = slides;
+    cache.carrusel = slides;
     cb(slides);
-  }).catch(function(){ cb(null); });
+  }).catch(function(){ cb([]); });
 }
 
-// Fotos de categoria: editable desde el Sheet "Categorias Itenez - Fotos".
-// Mike puede cambiar la columna imagen_url de cualquier fila (o agregar una fila nueva
+// Fotos de categoria: editable desde el Sheet "Categorias" de cada marca.
+// Se puede cambiar la columna imagen_url de cualquier fila (o agregar una fila nueva
 // con el nombre exacto de una categoria nueva) y la foto se actualiza sola en el sitio.
-function izLoadCategoryImages(cb){
-  if(window.__izCatImgs){ cb(window.__izCatImgs); return; }
-  fetch(CATEGORIAS_CSV_URL).then(function(r){ return r.text(); }).then(function(txt){
+function izLoadMarcaCategoryImages(marca, cb){
+  var cache = izCacheFor(marca.id);
+  if(cache.catImgs){ cb(cache.catImgs); return; }
+  fetch(izCsvUrl(marca.sheetCategorias)).then(function(r){ return r.text(); }).then(function(txt){
     var rows = izParseCSV(txt);
     var map = {};
     rows.forEach(function(r){
@@ -150,7 +211,7 @@ function izLoadCategoryImages(cb){
       var img = izFixImgUrl((r.imagen_url||'').trim());
       if(cat && img) map[cat] = img;
     });
-    window.__izCatImgs = map;
+    cache.catImgs = map;
     cb(map);
   }).catch(function(){ cb({}); });
 }
@@ -203,7 +264,7 @@ function izRenderCart(){
       html += '<div class="iz-cart-item"><img src="'+it.img+'"><div class="iz-ci-info"><b>'+it.name+'</b><span>'+it.pres+(it.price?(' · '+it.price):'')+'</span><span>Cant: '+it.qty+' &nbsp; <button class="iz-remove" onclick="izChangeCartQty(\''+slug+'\',-1)">−</button> <button class="iz-remove" onclick="izChangeCartQty(\''+slug+'\',1)">+</button></span></div><button class="iz-remove" onclick="izRemoveFromCart(\''+slug+'\')">Quitar</button></div>';
     });
     html += '</div>';
-    var msg = "Hola, quiero hacer un pedido de Iténez Productos Orientales:%0A";
+    var msg = "Hola, quiero hacer un pedido:%0A";
     keys.forEach(function(slug){ var it=c[slug]; msg += "- "+it.name+" ("+it.pres+") x"+it.qty+(it.price?(' - '+it.price):'')+"%0A"; });
     msg += "%0AGracias!";
     html += '<div id="iz-cart-foot"><a class="iz-wa-btn" target="_blank" href="https://wa.me/'+WHATSAPP_NUMBER+'?text='+msg+'">Enviar pedido por WhatsApp</a></div>';
@@ -281,10 +342,10 @@ function izCard(p){
   return div;
 }
 
-function izShareUrl(slug){
+function izShareUrl(slug, marcaId){
   var path = window.location.pathname;
   var dir = path.substring(0, path.lastIndexOf('/')+1);
-  return window.location.origin + dir + 'catalogo.html?producto=' + encodeURIComponent(slug);
+  return window.location.origin + dir + 'catalogo.html?marca=' + encodeURIComponent(marcaId) + '&producto=' + encodeURIComponent(slug);
 }
 function izToast(msg){
   var el = document.getElementById('iz-toast');
@@ -296,9 +357,10 @@ function izToast(msg){
 }
 function izShareProduct(p){
   if(!p) return;
-  var url = izShareUrl(p.slug);
+  var marcaId = window.__izActiveMarcaId || 'itenez';
+  var url = izShareUrl(p.slug, marcaId);
   var precio0 = (p.variantes && p.variantes[0] && p.variantes[0].precio) || '';
-  var text = p.nombre + (precio0 ? (' - '+precio0) : '') + ' | Iténez Productos Orientales';
+  var text = p.nombre + (precio0 ? (' - '+precio0) : '') + ' | ' + (p._marca || '');
   if(navigator.share){
     navigator.share({title:p.nombre, text:text, url:url}).catch(function(){});
   } else if(navigator.clipboard && navigator.clipboard.writeText){
@@ -316,9 +378,9 @@ var HERO_SLIDES = [
   {img:"https://lh3.googleusercontent.com/d/1xiEClMmtSD62BOmfaUhotmy1oUerFExy", title:"Aceites prensados en frío", text:"Pureza y calidad, extraídos sin perder sus propiedades naturales.", cat:"Aceites Prensados en Frío"}
 ];
 
-function izGetHeroSlides(data){
+function izGetHeroSlides(data, marca){
   var marked = data.filter(function(p){ return p.carrusel_orden && String(p.carrusel_orden).trim() !== ''; });
-  if(!marked.length) return HERO_SLIDES;
+  if(!marked.length) return (marca.id==='itenez') ? HERO_SLIDES : [];
   marked.sort(function(a,b){ return (parseFloat(a.carrusel_orden)||99) - (parseFloat(b.carrusel_orden)||99); });
   return marked.slice(0,8).map(function(p){
     var desc = p.carrusel_texto && p.carrusel_texto.trim() ? p.carrusel_texto.trim() : (p.descripcion||'').slice(0,140);
@@ -331,15 +393,16 @@ function izGetHeroSlides(data){
   });
 }
 
-function izRenderHome(data, carruselSlides, catImgs){
-  catImgs = catImgs || {};
-  var counts={}; data.forEach(function(p){ counts[p.categoria]=(counts[p.categoria]||0)+1; });
-  var root=document.getElementById('app-root');
-  var slides = (carruselSlides && carruselSlides.length) ? carruselSlides : izGetHeroSlides(data);
+// Arma el HTML del carrusel principal (usado en el home de cada marca y en la
+// pantalla de bienvenida). Cada boton respeta el link/categoria elegidos en el Sheet.
+function izBuildHeroHtml(slides, marcaId){
+  if(!slides.length) return '';
   var html = '<div class="iz-hero-carousel">';
   slides.forEach(function(s, i){
-    var link = s.cat ? ('catalogo.html?cat='+encodeURIComponent(s.cat)) : 'catalogo.html';
-    html += '<div class="iz-slide'+(i===0?' active':'')+'"><div class="iz-slide-bg" style="background-image:url(\''+s.img+'\')"></div><div class="iz-slide-overlay"><div class="iz-slide-content"><h1>'+s.title+'</h1><p>'+s.text+'</p><a class="iz-cta" href="'+link+'">'+(s.ctaText||'Ver catálogo')+'</a></div></div></div>';
+    var link = s.link ? s.link : (s.cat ? ('catalogo.html?marca='+marcaId+'&cat='+encodeURIComponent(s.cat)) : ('catalogo.html?marca='+marcaId));
+    var isExternal = /^https?:\/\//i.test(link);
+    var target = isExternal ? ' target="_blank" rel="noopener"' : '';
+    html += '<div class="iz-slide'+(i===0?' active':'')+'"><div class="iz-slide-bg" style="background-image:url(\''+s.img+'\')"></div><div class="iz-slide-overlay"><div class="iz-slide-content"><h1>'+s.title+'</h1><p>'+s.text+'</p><a class="iz-cta" href="'+link+'"'+target+'>'+(s.ctaText||'Ver catálogo')+'</a></div></div></div>';
   });
   if(slides.length>1){
     html += '<button class="iz-arrow prev" aria-label="Anterior">‹</button><button class="iz-arrow next" aria-label="Siguiente">›</button>';
@@ -348,14 +411,55 @@ function izRenderHome(data, carruselSlides, catImgs){
     html += '</div>';
   }
   html += '</div>';
+  return html;
+}
+
+// --- Pantalla de bienvenida: elegir marca ------------------------------
+// Muestra el mismo carrusel principal (con los datos de Iténez, la marca con
+// contenido) seguido del selector de marcas.
+function izRenderMarcaChooser(){
+  var root=document.getElementById('app-root');
+  var itenez = MARCAS.itenez;
+  root.innerHTML = '<div class="iz-loading"><div class="iz-spinner"></div><span>Cargando...</span></div>';
+  izLoadMarcaData(itenez, function(data){
+    izLoadMarcaCarousel(itenez, function(carruselSlides){
+      var slides = (carruselSlides && carruselSlides.length) ? carruselSlides : izGetHeroSlides(data, itenez);
+      var html = izBuildHeroHtml(slides, itenez.id);
+      html += '<div class="iz-marca-chooser iz-fade"><span class="iz-marca-eyebrow">Catálogo CAME</span><h1>Elige una marca</h1><p>Cada marca tiene su propio catálogo de categorías y productos.</p><div class="iz-marca-grid">';
+      MARCA_ORDER.forEach(function(id){
+        var m = MARCAS[id];
+        var soon = !(m.catOrder && m.catOrder.length);
+        html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+'"><span class="iz-marca-emoji">'+m.emoji+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
+      });
+      html += '</div></div>';
+      root.innerHTML = html;
+      izInitCarousel();
+      izRevealInit(root);
+    });
+  });
+}
+
+// --- Marca sin contenido todavia (sin categorias/productos cargados) ---
+function izRenderComingSoon(marca){
+  var root=document.getElementById('app-root');
+  root.innerHTML = '<div class="iz-comingsoon iz-fade"><span class="iz-emoji">'+marca.emoji+'</span><h1>'+marca.nombre+'</h1><p>Estamos preparando el catálogo de esta marca. Muy pronto vas a poder ver sus categorías y productos aquí.</p><a class="iz-cta" href="index.html">← Ver todas las marcas</a></div>';
+}
+
+function izRenderHome(marca, data, carruselSlides, catImgs){
+  catImgs = catImgs || {};
+  var counts={}; data.forEach(function(p){ counts[p.categoria]=(counts[p.categoria]||0)+1; });
+  var root=document.getElementById('app-root');
+  // El carrusel principal solo vive en la pantalla de bienvenida (izRenderMarcaChooser);
+  // el home de cada marca arranca directo en la franja de confianza.
+  var html = '';
 
   html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
 
   html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Explora por categoría</h2></div><div class="iz-cats">';
-  izGetCategories(data).forEach(function(cat){
+  izGetCategories(data, marca).forEach(function(cat){
     var img = catImgs[cat];
     var bg = img ? (' style="background-image:url(\''+img+'\')"') : '';
-    html += '<a class="iz-cat-card iz-reveal'+(img?'':' iz-cat-noimg')+'" href="catalogo.html?cat='+encodeURIComponent(cat)+'"'+bg+'>'+(img?'':'<span class="iz-icon">'+(CAT_ICONS[cat]||'🌿')+'</span>')+'<div class="iz-cat-info"><span class="iz-cat-name">'+cat+'</span><span class="iz-cat-count">'+(counts[cat]||0)+' productos</span></div></a>';
+    html += '<a class="iz-cat-card iz-reveal'+(img?'':' iz-cat-noimg')+'" href="catalogo.html?marca='+marca.id+'&cat='+encodeURIComponent(cat)+'"'+bg+'><span class="iz-icon">'+(marca.catIcons[cat]||'🌿')+'</span><div class="iz-cat-info"><span class="iz-cat-name">'+cat+'</span><span class="iz-cat-count">'+(counts[cat]||0)+' productos</span></div></a>';
   });
   html += '</div></div>';
 
@@ -368,9 +472,9 @@ function izRenderHome(data, carruselSlides, catImgs){
   if(picked.length<10){
     for(var j=0;j<destacados.length && picked.length<10;j++){ if(picked.indexOf(destacados[j])===-1) picked.push(destacados[j]); }
   }
-  html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Productos destacados</h2><a class="iz-see-all" href="catalogo.html">Ver todos →</a></div><div class="iz-scroll-row" id="iz-destacados"></div></div>';
+  html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Productos destacados</h2><a class="iz-see-all" href="catalogo.html?marca='+marca.id+'">Ver todos →</a></div><div class="iz-scroll-row" id="iz-destacados"></div></div>';
 
-  html += '<div class="iz-cta-band iz-reveal"><h2>¿Ya sabes qué buscas?</h2><p>Arma tu pedido y coordínalo directo por WhatsApp.</p><a class="iz-cta iz-cta-light" href="catalogo.html">Ir al catálogo</a></div>';
+  html += '<div class="iz-cta-band iz-reveal"><h2>¿Ya sabes qué buscas?</h2><p>Arma tu pedido y coordínalo directo por WhatsApp.</p><a class="iz-cta iz-cta-light" href="catalogo.html?marca='+marca.id+'">Ir al catálogo</a></div>';
 
   root.innerHTML = html;
   var scrollRow = document.getElementById('iz-destacados');
@@ -408,14 +512,14 @@ function izInitCarousel(){
   startAuto();
 }
 
-function izRenderProductos(data){
+function izRenderProductos(marca, data){
   var root=document.getElementById('app-root');
   var params = new URLSearchParams(window.location.search);
   var activeCat = params.get('cat') || 'Todos';
   var html = '<div class="iz-toolbar"><input id="iz-search" class="iz-search" placeholder="Buscar producto..."><div class="iz-chips" id="iz-chips"></div></div><div class="iz-grid" id="iz-grid"></div>';
   root.innerHTML = html;
   var chips=document.getElementById('iz-chips');
-  ['Todos'].concat(izGetCategories(data)).forEach(function(cat){
+  ['Todos'].concat(izGetCategories(data, marca)).forEach(function(cat){
     var b=document.createElement('button'); b.className='iz-chip'+(cat===activeCat?' active':''); b.textContent=cat;
     b.onclick=function(){ activeCat=cat; Array.prototype.forEach.call(chips.children,function(c){c.classList.remove('active');}); b.classList.add('active'); izFilter(); };
     chips.appendChild(b);
@@ -455,17 +559,21 @@ function izInit(){
   var root = document.getElementById('app-root');
   if(!root) return;
   var page = root.getAttribute('data-page') || 'home';
-  izRenderNav(page);
+  var marcaId = izActiveMarcaId();
+  window.__izActiveMarcaId = marcaId || 'itenez';
+  izRenderNav(page, marcaId);
   izUpdateCartCount();
   if(page==='contacto'){ izRenderContacto(); return; }
+  if(page==='home' && !marcaId){ izRenderMarcaChooser(); return; }
+  var marca = MARCAS[marcaId || 'itenez'] || MARCAS.itenez;
   root.innerHTML = '<div class="iz-loading"><div class="iz-spinner"></div><span>Cargando productos...</span></div>';
-  izLoadData(function(data){
+  izLoadMarcaData(marca, function(data){
+    var cats = izGetCategories(data, marca);
+    if(!cats.length){ izRenderComingSoon(marca); return; }
     if(page==='home'){
-      izLoadCarouselData(function(carruselSlides){
-        izLoadCategoryImages(function(catImgs){ izRenderHome(data, carruselSlides, catImgs); });
-      });
+      izLoadMarcaCategoryImages(marca, function(catImgs){ izRenderHome(marca, data, null, catImgs); });
     }
-    else if(page==='productos') izRenderProductos(data);
+    else if(page==='productos') izRenderProductos(marca, data);
   });
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', izInit); else izInit();
