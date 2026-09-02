@@ -300,7 +300,7 @@ function izOpenModal(p){
   html += '<img class="iz-modal-img" src="'+p.imagen_url+'">';
   html += '<div class="iz-modal-body"><h2>'+p.nombre+'</h2><div class="iz-pres">'+p.categoria+(multi?'':(' · '+variants[0].presentacion))+'</div>';
   if(multi){
-    html += '<select id="iz-modal-variant" class="iz-variant-select">'+variants.map(function(v,i){ return '<option value="'+i+'">'+(v.presentacion||('Opción '+(i+1)))+'</option>'; }).join('')+'</select>';
+    html += '<div class="iz-variant-chips" id="iz-modal-variant">'+variants.map(function(v,i){ return '<button type="button" class="iz-variant-chip'+(i===0?' active':'')+'" data-idx="'+i+'">'+(v.presentacion||('Opción '+(i+1)))+'</button>'; }).join('')+'</div>';
   }
   html += '<div class="iz-pres" id="iz-modal-price">'+(variants[0].precio?('<b>'+variants[0].precio+'</b>'):'')+'</div>';
   html += '<p class="iz-desc">'+p.descripcion+'</p>';
@@ -312,12 +312,17 @@ function izOpenModal(p){
   window.__izModalVariants = variants;
   document.getElementById('iz-overlay').style.display='block';
   document.getElementById('iz-modal').classList.add('open');
-  var selEl = document.getElementById('iz-modal-variant');
-  if(selEl){
-    selEl.addEventListener('change', function(){
-      window.__izModalVariantIdx = parseInt(selEl.value);
-      var v = variants[window.__izModalVariantIdx];
-      document.getElementById('iz-modal-price').innerHTML = v.precio ? ('<b>'+v.precio+'</b>') : '';
+  var chipsWrap = document.getElementById('iz-modal-variant');
+  if(chipsWrap){
+    var chipBtns = chipsWrap.querySelectorAll('.iz-variant-chip');
+    chipBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        chipBtns.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        window.__izModalVariantIdx = parseInt(btn.dataset.idx);
+        var v = variants[window.__izModalVariantIdx];
+        document.getElementById('iz-modal-price').innerHTML = v.precio ? ('<b>'+v.precio+'</b>') : '';
+      });
     });
   }
 }
@@ -341,22 +346,28 @@ function izCard(p){
   var div = document.createElement('div');
   div.className='iz-card iz-reveal';
   var presHtml = multi
-    ? '<select class="iz-variant-select">'+variants.map(function(v,i){ return '<option value="'+i+'">'+(v.presentacion||('Opción '+(i+1)))+'</option>'; }).join('')+'</select>'
+    ? '<div class="iz-variant-chips">'+variants.map(function(v,i){ return '<button type="button" class="iz-variant-chip'+(i===0?' active':'')+'" data-idx="'+i+'">'+(v.presentacion||('Opción '+(i+1)))+'</button>'; }).join('')+'</div>'
     : '<span class="iz-pres">'+variants[0].presentacion+'</span>';
   div.innerHTML = '<div class="iz-card-imgwrap"><img src="'+p.imagen_url+'" loading="lazy"><button class="iz-share-icon" title="Compartir">🔗</button></div><div class="iz-card-body"><span class="iz-cat-tag">'+p.categoria+'</span><h3>'+p.nombre+'</h3>'+presHtml+'<span class="iz-price">'+(variants[0].precio||'')+'</span>'+(out?'<span class="iz-badge-out">Agotado</span>':'')+'<button class="iz-add-btn" '+(out?'disabled':'')+'>Agregar</button></div>';
   div.querySelector('img').addEventListener('click', function(){ izOpenModal(p); });
   div.querySelector('h3').addEventListener('click', function(){ izOpenModal(p); });
   div.querySelector('.iz-share-icon').addEventListener('click', function(e){ e.stopPropagation(); izShareProduct(p); });
   var priceEl = div.querySelector('.iz-price');
-  var selEl = div.querySelector('.iz-variant-select');
-  if(selEl){
-    selEl.addEventListener('click', function(e){ e.stopPropagation(); });
-    selEl.addEventListener('change', function(){ priceEl.textContent = variants[parseInt(selEl.value)].precio || ''; });
-  }
+  var selectedIdx = 0;
+  var chipBtns = div.querySelectorAll('.iz-variant-chip');
+  chipBtns.forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      chipBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedIdx = parseInt(btn.dataset.idx);
+      priceEl.textContent = variants[selectedIdx].precio || '';
+    });
+  });
   div.querySelector('.iz-add-btn').addEventListener('click', function(e){
     e.stopPropagation();
     if(out) return;
-    var v = variants[selEl ? parseInt(selEl.value) : 0];
+    var v = variants[selectedIdx];
     izAddToCart(p.slug, p.nombre, v.presentacion, v.precio, p.imagen_url, 1);
   });
   return div;
