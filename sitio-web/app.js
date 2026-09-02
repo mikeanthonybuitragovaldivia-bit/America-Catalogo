@@ -13,7 +13,7 @@ var MARCAS = {
   itenez: {
     id:'itenez', nombre:'Iténez', nombreCompleto:'Iténez Productos Orientales',
     tagline:'Cuidado natural para toda la familia',
-    emoji:'🌿', color:'#3f6b4a', colorOsc:'#28422e',
+    emoji:'🌿', color:'#3f6b4a', colorOsc:'#28422e', logo:'logo-itenez.png',
     sheetProductos:'1PVtQ3nucdwCAN9FMi_csEMRm6sQEtOIChEJdr2KtlhQ',
     sheetCategorias:'1EiAiZv9SmLIpW-0aqGktu8jRWd8y9HrnyE350Ejx1Cc',
     sheetCarrusel:'1nqYKBMZ-VjAWEgIKP7ohxh1Uugl2ayIDImbWK5CV6JA',
@@ -23,7 +23,7 @@ var MARCAS = {
   natumis: {
     id:'natumis', nombre:'Natumis', nombreCompleto:'Natumis',
     tagline:'Jabones y velas artesanales',
-    emoji:'🌱', color:'#1f8a55', colorOsc:'#155c3a',
+    emoji:'🌱', color:'#1f8a55', colorOsc:'#155c3a', logo:'logo-natumis.png',
     sheetProductos:'12jAmdaXPlVycNOjVcyVOvAbztSg48_Ab5PKCrRbXZSA',
     sheetCategorias:'1iM_fo8FWIfXiwxx3PbkuafRy2nQFPt1oN2UsOWn0rdk',
     sheetCarrusel:null,
@@ -502,7 +502,8 @@ function izRenderHome(marca, data, carruselSlides, catImgs){
   // el home de cada marca arranca directo en la franja de confianza.
   var html = '';
 
-  html += '<div class="iz-marca-hero" style="--m-color:'+marca.color+';--m-color-osc:'+marca.colorOsc+'"><span class="iz-marca-hero-emoji">'+marca.emoji+'</span><h1>'+marca.nombreCompleto+'</h1><p>'+marca.tagline+'</p></div>';
+  var marcaHeroTitle = marca.logo ? '<img class="iz-marca-hero-logo" src="'+marca.logo+'" alt="'+marca.nombreCompleto+'">' : ('<span class="iz-marca-hero-emoji">'+marca.emoji+'</span><h1>'+marca.nombreCompleto+'</h1>');
+  html += '<div class="iz-marca-hero" style="--m-color:'+marca.color+';--m-color-osc:'+marca.colorOsc+'">'+marcaHeroTitle+'<p>'+marca.tagline+'</p></div>';
 
   html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
 
