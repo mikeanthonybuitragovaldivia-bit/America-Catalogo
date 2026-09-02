@@ -269,6 +269,25 @@ function izLoadMarcaCategoryImages(marca, cb){
   }).catch(function(){ cb({}); });
 }
 
+// Fotos de portada de cada marca en la pantalla "Elige una marca". Editable desde
+// el Sheet "MARCAS - Imagenes de Portada" (carpeta Carrusel en Drive): una fila por
+// marca (columna "marca" = itenez/natumis/gimnasio/ropa) con su foto en "imagen_url".
+var MARCAS_IMG_SHEET_ID = '1_rdF3ccwJWXXoGkPm2QEGUxFlgTlM6rL-hQwgrskJ2A';
+function izLoadMarcasCoverImages(cb){
+  if(window.__izMarcaImgs){ cb(window.__izMarcaImgs); return; }
+  fetch(izCsvUrl(MARCAS_IMG_SHEET_ID)).then(function(r){ return r.text(); }).then(function(txt){
+    var rows = izParseCSV(txt);
+    var map = {};
+    rows.forEach(function(r){
+      var id = (r.marca||'').trim().toLowerCase();
+      var img = izFixImgUrl((r.imagen_url||'').trim());
+      if(id && img) map[id] = img;
+    });
+    window.__izMarcaImgs = map;
+    cb(map);
+  }).catch(function(){ cb({}); });
+}
+
 function izGetCart(){ try{ return JSON.parse(localStorage.getItem('izCart')||'{}'); }catch(e){ return {}; } }
 function izSetCart(c){ localStorage.setItem('izCart', JSON.stringify(c)); izUpdateCartCount(); }
 function izUpdateCartCount(bump){
@@ -487,13 +506,16 @@ function izRenderMarcaChooser(){
   root.innerHTML = '<div class="iz-loading"><div class="iz-spinner"></div><span>Cargando...</span></div>';
   izLoadMarcaData(itenez, function(data){
     izLoadMarcaCarousel(itenez, function(carruselSlides){
+    izLoadMarcasCoverImages(function(marcaImgs){
       var slides = (carruselSlides && carruselSlides.length) ? carruselSlides : izGetHeroSlides(data, itenez);
       var html = izBuildHeroHtml(slides, itenez.id);
       html += '<div class="iz-marca-chooser iz-fade"><span class="iz-marca-eyebrow">Catálogo CAME</span><h1>Elige una marca</h1><p>Cada marca tiene su propio catálogo de categorías y productos.</p><div class="iz-marca-grid">';
       MARCA_ORDER.forEach(function(id){
         var m = MARCAS[id];
         var soon = !(m.catOrder && m.catOrder.length);
-        html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+'"><span class="iz-marca-emoji">'+izIcon(m.icon,30)+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
+        var img = marcaImgs[id];
+        var bgStyle = img ? ('background:linear-gradient(155deg,'+m.color+'b3 0%,'+m.colorOsc+'e6 100%),url(\''+img+'\');background-size:cover;background-position:center;') : '';
+        html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+';'+bgStyle+'"><span class="iz-marca-emoji">'+izIcon(m.icon,30)+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
       });
       html += '</div></div>';
 
@@ -517,6 +539,7 @@ function izRenderMarcaChooser(){
       picked.forEach(function(p){ scrollRow.appendChild(izCard(p)); });
       izInitCarousel();
       izRevealInit(root);
+    });
     });
   });
 }
