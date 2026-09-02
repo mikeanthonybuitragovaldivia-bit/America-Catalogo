@@ -94,6 +94,26 @@ function izRenderNav(activePage, marcaId){
   }
 }
 
+function izRenderFooter(marcaId){
+  var el = document.getElementById('footer-placeholder');
+  if(!el) return;
+  var qs = '?marca='+(marcaId||'itenez');
+  var marcasLinks = MARCA_ORDER.map(function(id){
+    var m = MARCAS[id];
+    return '<a href="index.html?marca='+id+'">'+m.emoji+' '+m.nombre+'</a>';
+  }).join('');
+  el.innerHTML = ''
+    + '<footer class="iz-footer">'
+    +   '<div class="iz-footer-grid">'
+    +     '<div class="iz-footer-col iz-footer-brand"><img src="logo-came.png" alt="CAME" class="iz-footer-logo"><p>Catálogo de marcas propias con productos naturales, elaborados de forma artesanal en Bolivia.</p></div>'
+    +     '<div class="iz-footer-col"><h4>Navegación</h4><a href="index.html">Inicio</a><a href="catalogo.html'+qs+'">Productos</a><a href="contacto.html">Contacto</a></div>'
+    +     '<div class="iz-footer-col"><h4>Marcas</h4>'+marcasLinks+'</div>'
+    +     '<div class="iz-footer-col"><h4>Contáctanos</h4><a href="https://wa.me/'+WHATSAPP_NUMBER+'" target="_blank">💬 WhatsApp</a><p class="iz-footer-note">🚚 Envíos a todo el país<br>🤲 Elaboración artesanal<br>💬 Atención personalizada</p></div>'
+    +   '</div>'
+    +   '<div class="iz-footer-bottom">© '+new Date().getFullYear()+' CAME · Todos los derechos reservados</div>'
+    + '</footer>';
+}
+
 // --- Animaciones al hacer scroll -------------------------------------
 // Cualquier elemento con la clase "iz-reveal" aparece con un fade+slide-up
 // suave apenas entra en la pantalla, con un pequeño efecto escalonado
@@ -432,7 +452,25 @@ function izRenderMarcaChooser(){
         html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+'"><span class="iz-marca-emoji">'+m.emoji+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
       });
       html += '</div></div>';
+
+      html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
+
+      var destacados = data.filter(function(p){ return p.disponible!=='NO'; });
+      var picked = [], seen = {};
+      for(var i=0;i<destacados.length && picked.length<10;i++){
+        var p = destacados[i];
+        if(!seen[p.categoria]){ seen[p.categoria]=true; picked.push(p); }
+      }
+      if(picked.length<10){
+        for(var j=0;j<destacados.length && picked.length<10;j++){ if(picked.indexOf(destacados[j])===-1) picked.push(destacados[j]); }
+      }
+      html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Productos destacados</h2><a class="iz-see-all" href="catalogo.html?marca='+itenez.id+'">Ver todos →</a></div><div class="iz-scroll-row" id="iz-destacados"></div></div>';
+
+      html += '<div class="iz-cta-band iz-reveal"><h2>¿Ya sabes qué buscas?</h2><p>Arma tu pedido y coordínalo directo por WhatsApp.</p><a class="iz-cta iz-cta-light" href="catalogo.html?marca='+itenez.id+'">Ir al catálogo</a></div>';
+
       root.innerHTML = html;
+      var scrollRow = document.getElementById('iz-destacados');
+      picked.forEach(function(p){ scrollRow.appendChild(izCard(p)); });
       izInitCarousel();
       izRevealInit(root);
     });
@@ -564,6 +602,7 @@ function izInit(){
   var marcaId = izActiveMarcaId();
   window.__izActiveMarcaId = marcaId || 'itenez';
   izRenderNav(page, marcaId);
+  izRenderFooter(marcaId);
   izUpdateCartCount();
   if(page==='contacto'){ izRenderContacto(); return; }
   if(page==='home' && !marcaId){ izRenderMarcaChooser(); return; }
