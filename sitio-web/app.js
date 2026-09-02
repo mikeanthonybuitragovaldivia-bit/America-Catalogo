@@ -14,7 +14,7 @@ var MARCAS = {
     id:'itenez', nombre:'Iténez', nombreCompleto:'Iténez Productos Orientales',
     tagline:'Cuidado natural para toda la familia',
     emoji:'🌿', color:'#3f6b4a', colorOsc:'#28422e',
-    sheetProductos:'1MwF-A4HdN6tqvQM1-hyGAScNGdmvURGyiGvbllclLjU',
+    sheetProductos:'1PVtQ3nucdwCAN9FMi_csEMRm6sQEtOIChEJdr2KtlhQ',
     sheetCategorias:'1EiAiZv9SmLIpW-0aqGktu8jRWd8y9HrnyE350Ejx1Cc',
     sheetCarrusel:'1nqYKBMZ-VjAWEgIKP7ohxh1Uugl2ayIDImbWK5CV6JA',
     catOrder:["Hidrolatos","Tinturas Naturales","Aceites Esenciales","IVI SY","Oleatos y Macerados","Aceites Prensados en Frío","Sentido Natural","Vinagres","Harinas","Sales y Otros"],
