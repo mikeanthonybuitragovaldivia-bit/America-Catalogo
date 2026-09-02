@@ -15,6 +15,15 @@ body{margin:0;font-family:'Segoe UI',Arial,sans-serif;color:var(--texto);backgro
 @media(max-width:767px){#iz-nav .iz-logo img{height:34px;}#iz-nav .iz-marca-badge{font-size:11px;padding:4px 10px;}#iz-nav .iz-brandwrap{gap:8px;}}
 @media(max-width:520px){#iz-nav .iz-marca-badge span.iz-badge-txt{display:none;}}
 #iz-nav .iz-links{display:flex;gap:28px;align-items:center;}
+.iz-nav-products{position:relative;display:flex;align-items:center;gap:2px;}
+.iz-nav-caret{background:none;border:none;padding:2px;cursor:pointer;color:#8a8570;display:flex;align-items:center;transition:transform .2s,color .2s;}
+.iz-nav-caret:hover{color:var(--dorado-osc);}
+.iz-nav-caret.iz-caret-open{transform:rotate(180deg);color:var(--dorado-osc);}
+.iz-marca-menu{position:absolute;top:calc(100% + 14px);left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 12px 28px rgba(20,32,23,.16);padding:6px;min-width:170px;display:none;flex-direction:column;gap:2px;z-index:50;}
+.iz-marca-menu.open{display:flex;}
+.iz-marca-menu a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:var(--texto);text-decoration:none;font-size:13.5px;font-weight:600;transition:background .15s;}
+.iz-marca-menu a:hover{background:var(--verde-suave);}
+.iz-marca-menu a .iz-icon-svg{color:var(--dorado);}
 #iz-nav a.iz-link{position:relative;color:var(--texto);text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.5px;transition:color .2s;}
 #iz-nav a.iz-link::after{content:'';position:absolute;left:0;right:100%;bottom:-4px;height:2px;background:var(--dorado);transition:right .25s ease;}
 #iz-nav a.iz-link:hover::after,#iz-nav a.iz-link.active::after{right:0;}

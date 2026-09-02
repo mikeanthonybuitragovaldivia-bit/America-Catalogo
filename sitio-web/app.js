@@ -63,7 +63,8 @@ var IZ_ICON_PATHS = {
   hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
   chat:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
   share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/>',
-  check:'<path d="M20 6 9 17l-5-5"/>'
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  chevronDown:'<path d="m6 9 6 6 6-6"/>'
 };
 function izIcon(name, size){
   size = size || 20;
@@ -114,9 +115,10 @@ function izRenderNav(activePage, marcaId){
   function link(href,label,page){ return '<a href="'+href+'" class="iz-link'+(page===activePage?' active':'')+'">'+label+'</a>'; }
   var qs = navMarca ? ('?marca='+navMarca.id) : ('?marca='+MARCAS.itenez.id);
   var badge = navMarca ? ('<a href="index.html" class="iz-marca-badge" title="Cambiar de marca" style="background:'+navMarca.color+'1c;color:'+navMarca.colorOsc+'">'+izIcon(navMarca.icon,14)+' <span class="iz-badge-txt">'+navMarca.nombre+'</span></a>') : '';
+  var marcaMenu = '<div class="iz-nav-products"><a href="catalogo.html'+qs+'" class="iz-link'+(activePage==='productos'?' active':'')+'">PRODUCTOS</a><button class="iz-nav-caret" type="button" onclick="izToggleMarcaMenu(event)" aria-label="Elegir marca">'+izIcon('chevronDown',14)+'</button><div class="iz-marca-menu" id="iz-marca-menu">'+MARCA_ORDER.map(function(id){ var m=MARCAS[id]; return '<a href="catalogo.html?marca='+id+'">'+izIcon(m.icon,15)+' '+m.nombre+'</a>'; }).join('')+'</div></div>';
   nav.innerHTML = '<div id="iz-nav"><div class="iz-brandwrap"><a href="index.html" class="iz-logo"><img src="logo-came.png" alt="CAME"></a>'+badge+'</div><div class="iz-links">'
     + link('index.html'+qs,'INICIO','home')
-    + link('catalogo.html'+qs,'PRODUCTOS','productos')
+    + marcaMenu
     + link('contacto.html','CONTACTO','contacto')
     + '<button id="iz-cart-btn" onclick="izOpenCart()">'+izIcon('cart',16)+' Pedido<span id="iz-cart-count">0</span></button></div></div>';
   var navEl = document.getElementById('iz-nav');
@@ -126,6 +128,20 @@ function izRenderNav(activePage, marcaId){
     window.addEventListener('scroll', onScroll, {passive:true});
   }
 }
+function izToggleMarcaMenu(e){
+  e.preventDefault(); e.stopPropagation();
+  var menu = document.getElementById('iz-marca-menu');
+  var caret = e.currentTarget;
+  if(!menu) return;
+  var willOpen = !menu.classList.contains('open');
+  menu.classList.toggle('open', willOpen);
+  caret.classList.toggle('iz-caret-open', willOpen);
+  if(willOpen){
+    var closeOnClick = function(ev){ if(!menu.contains(ev.target)){ menu.classList.remove('open'); caret.classList.remove('iz-caret-open'); document.removeEventListener('click', closeOnClick); } };
+    setTimeout(function(){ document.addEventListener('click', closeOnClick); },0);
+  }
+}
+window.izToggleMarcaMenu = izToggleMarcaMenu;
 
 function izRenderFooter(marcaId){
   var el = document.getElementById('footer-placeholder');
