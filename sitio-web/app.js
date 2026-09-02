@@ -13,26 +13,26 @@ var MARCAS = {
   itenez: {
     id:'itenez', nombre:'Iténez', nombreCompleto:'Iténez Productos Orientales',
     tagline:'Cuidado natural para toda la familia',
-    emoji:'🌿', color:'#3f6b4a', colorOsc:'#28422e', logo:'logo-itenez.png',
+    icon:'leaf', color:'#3f6b4a', colorOsc:'#28422e', logo:'logo-itenez.png',
     sheetProductos:'1PVtQ3nucdwCAN9FMi_csEMRm6sQEtOIChEJdr2KtlhQ',
     sheetCategorias:'1EiAiZv9SmLIpW-0aqGktu8jRWd8y9HrnyE350Ejx1Cc',
     sheetCarrusel:'1nqYKBMZ-VjAWEgIKP7ohxh1Uugl2ayIDImbWK5CV6JA',
     catOrder:["Hidrolatos","Tinturas Naturales","Aceites Esenciales","IVI SY","Oleatos y Macerados","Aceites Prensados en Frío","Sentido Natural","Vinagres","Harinas","Sales y Otros"],
-    catIcons:{"Hidrolatos":"💧","Tinturas Naturales":"🌿","Aceites Esenciales":"🌸","IVI SY":"🧴","Oleatos y Macerados":"🫒","Aceites Prensados en Frío":"🥥","Sentido Natural":"🍃","Vinagres":"🍾","Harinas":"🌾","Sales y Otros":"🧂"}
+    catIcons:{}
   },
   natumis: {
     id:'natumis', nombre:'Natumis', nombreCompleto:'Natumis',
     tagline:'Jabones y velas artesanales',
-    emoji:'🌱', color:'#1f8a55', colorOsc:'#155c3a', logo:'logo-natumis.png',
+    icon:'sprout', color:'#1f8a55', colorOsc:'#155c3a', logo:'logo-natumis.png',
     sheetProductos:'12jAmdaXPlVycNOjVcyVOvAbztSg48_Ab5PKCrRbXZSA',
     sheetCategorias:'1iM_fo8FWIfXiwxx3PbkuafRy2nQFPt1oN2UsOWn0rdk',
     sheetCarrusel:null,
-    catOrder:['Jabones','Velas'], catIcons:{'Jabones':'🧼','Velas':'🕯️'}
+    catOrder:['Jabones','Velas'], catIcons:{}
   },
   gimnasio: {
     id:'gimnasio', nombre:'Gimnasio', nombreCompleto:'Gimnasio',
     tagline:'Muy pronto en tu catálogo',
-    emoji:'🏋️', color:'#c9532f', colorOsc:'#8a3a20',
+    icon:'dumbbell', color:'#c9532f', colorOsc:'#8a3a20',
     sheetProductos:'13qa1MfuE8ZDKkIdZsReWDxgew5M_yP6qIgPSRP2cEO8',
     sheetCategorias:'1c2pyKZhEqh1XRI7ZoA_PYLPMZzUHTtLrFpBVU_p50oI',
     sheetCarrusel:null,
@@ -41,7 +41,7 @@ var MARCAS = {
   ropa: {
     id:'ropa', nombre:'Ropa', nombreCompleto:'Ropa',
     tagline:'Muy pronto en tu catálogo',
-    emoji:'👕', color:'#3f57c9', colorOsc:'#2a3a8a',
+    icon:'shirt', color:'#3f57c9', colorOsc:'#2a3a8a',
     sheetProductos:'1QRe6YwIiZDhDYjk1RMEa8FEnklUA_8E0zdyocsWzhYE',
     sheetCategorias:'1I9rAz5nLLthdnazBtG_3B_zArpXQraaRjpodmkm1mG4',
     sheetCarrusel:null,
@@ -49,6 +49,39 @@ var MARCAS = {
   }
 };
 var MARCA_ORDER = ['itenez','natumis','gimnasio','ropa'];
+
+// --- Iconos --------------------------------------------------------------
+// Set de iconos de linea (estilo lucide) usados en vez de emojis, para una
+// estetica mas elegante y profesional. Heredan el color de texto (currentColor).
+var IZ_ICON_PATHS = {
+  leaf:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+  sprout:'<path d="M7 20h10"/><path d="M10 20c0-4.4-1.6-6-4-6-2 0-3 1-3 3 0 2 1 3 3 3z"/><path d="M14 20c0-6.2 2.5-9.5 8-9.5C22 15 18.5 20 14 20Z"/><path d="M10 15.5C9.5 12.5 11 10.5 12.5 8"/>',
+  dumbbell:'<path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/>',
+  shirt:'<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+  cart:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+  truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62L18.7 8.38A1 1 0 0 0 17.93 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+  hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+  chat:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>'
+};
+function izIcon(name, size){
+  size = size || 20;
+  var p = IZ_ICON_PATHS[name] || '';
+  return '<svg class="iz-icon-svg" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
+
+function izTrustBandHtml(){
+  function item(icon, title, sub){
+    return '<div class="iz-trust-item iz-reveal">'+izIcon(icon)+'<div><b>'+title+'</b><small>'+sub+'</small></div></div>';
+  }
+  return '<div class="iz-trust">'
+    + item('leaf','100% Natural','Ingredientes de origen vegetal')
+    + item('hand','Elaboración artesanal','Producción propia en Bolivia')
+    + item('truck','Envíos a todo el país','Coordinamos la entrega')
+    + item('chat','Atención personalizada','Pedidos directos por WhatsApp')
+    + '</div>';
+}
 
 function izCsvUrl(sheetId){ return "https://docs.google.com/spreadsheets/d/"+sheetId+"/export?format=csv"; }
 
@@ -80,12 +113,12 @@ function izRenderNav(activePage, marcaId){
   var navMarca = MARCAS[marcaId];
   function link(href,label,page){ return '<a href="'+href+'" class="iz-link'+(page===activePage?' active':'')+'">'+label+'</a>'; }
   var qs = navMarca ? ('?marca='+navMarca.id) : ('?marca='+MARCAS.itenez.id);
-  var badge = navMarca ? ('<a href="index.html" class="iz-marca-badge" title="Cambiar de marca" style="background:'+navMarca.color+'1c;color:'+navMarca.colorOsc+'">'+navMarca.emoji+' <span class="iz-badge-txt">'+navMarca.nombre+'</span></a>') : '';
+  var badge = navMarca ? ('<a href="index.html" class="iz-marca-badge" title="Cambiar de marca" style="background:'+navMarca.color+'1c;color:'+navMarca.colorOsc+'">'+izIcon(navMarca.icon,14)+' <span class="iz-badge-txt">'+navMarca.nombre+'</span></a>') : '';
   nav.innerHTML = '<div id="iz-nav"><div class="iz-brandwrap"><a href="index.html" class="iz-logo"><img src="logo-came.png" alt="CAME"></a>'+badge+'</div><div class="iz-links">'
     + link('index.html'+qs,'INICIO','home')
     + link('catalogo.html'+qs,'PRODUCTOS','productos')
     + link('contacto.html','CONTACTO','contacto')
-    + '<button id="iz-cart-btn" onclick="izOpenCart()">🛒 Pedido<span id="iz-cart-count">0</span></button></div></div>';
+    + '<button id="iz-cart-btn" onclick="izOpenCart()">'+izIcon('cart',16)+' Pedido<span id="iz-cart-count">0</span></button></div></div>';
   var navEl = document.getElementById('iz-nav');
   if(navEl){
     var onScroll = function(){ navEl.classList.toggle('scrolled', window.scrollY>8); };
@@ -100,7 +133,7 @@ function izRenderFooter(marcaId){
   var qs = '?marca='+(marcaId||'itenez');
   var marcasLinks = MARCA_ORDER.map(function(id){
     var m = MARCAS[id];
-    return '<a href="index.html?marca='+id+'">'+m.emoji+' '+m.nombre+'</a>';
+    return '<a href="index.html?marca='+id+'">'+izIcon(m.icon,15)+' '+m.nombre+'</a>';
   }).join('');
   el.innerHTML = ''
     + '<footer class="iz-footer">'
@@ -108,7 +141,7 @@ function izRenderFooter(marcaId){
     +     '<div class="iz-footer-col iz-footer-brand"><img src="logo-came.png" alt="CAME" class="iz-footer-logo"><p>Catálogo de marcas propias con productos naturales, elaborados de forma artesanal en Bolivia.</p></div>'
     +     '<div class="iz-footer-col"><h4>Navegación</h4><a href="index.html">Inicio</a><a href="catalogo.html'+qs+'">Productos</a><a href="contacto.html">Contacto</a></div>'
     +     '<div class="iz-footer-col"><h4>Marcas</h4>'+marcasLinks+'</div>'
-    +     '<div class="iz-footer-col"><h4>Contáctanos</h4><a href="https://wa.me/'+WHATSAPP_NUMBER+'" target="_blank">💬 WhatsApp</a><p class="iz-footer-note">🚚 Envíos a todo el país<br>🤲 Elaboración artesanal<br>💬 Atención personalizada</p></div>'
+    +     '<div class="iz-footer-col"><h4>Contáctanos</h4><a href="https://wa.me/'+WHATSAPP_NUMBER+'" target="_blank">'+izIcon('chat',15)+' WhatsApp</a><div class="iz-footer-note"><div>'+izIcon('truck',14)+' Envíos a todo el país</div><div>'+izIcon('hand',14)+' Elaboración artesanal</div><div>'+izIcon('chat',14)+' Atención personalizada</div></div></div>'
     +   '</div>'
     +   '<div class="iz-footer-bottom">© '+new Date().getFullYear()+' CAME · Todos los derechos reservados</div>'
     + '</footer>';
@@ -253,7 +286,7 @@ function izAddToCart(slug, name, pres, price, img, qty){
   if(c[key]) c[key].qty += qty; else c[key]={name:name,pres:pres,price:price,img:img,qty:qty};
   localStorage.setItem('izCart', JSON.stringify(c));
   izUpdateCartCount(true);
-  izToast('✓ '+name+' agregado al pedido');
+  izToast(izIcon('check',15)+' '+name+' agregado al pedido');
 }
 function izRemoveFromCart(slug){ var c=izGetCart(); delete c[slug]; izSetCart(c); izRenderCart(); }
 function izChangeCartQty(slug, delta){
@@ -306,7 +339,7 @@ function izOpenModal(p){
   html += '<p class="iz-desc">'+p.descripcion+'</p>';
   if(p.disponible==='NO'){ html += '<p><span class="iz-badge-out">Agotado</span></p>'; }
   html += '<div class="iz-qty-row"><button onclick="izModalQty(-1)">−</button><span id="iz-modal-qty">1</span><button onclick="izModalQty(1)">+</button></div>';
-  html += '<div class="iz-modal-actions"><button class="iz-add-btn" style="flex:1;padding:12px;" '+(p.disponible==='NO'?'disabled':'')+' onclick="izAddFromModal()">Agregar al pedido</button><button class="iz-share-btn" title="Compartir" onclick="izShareProduct(window.__izModalProduct)">🔗 Compartir</button></div></div>';
+  html += '<div class="iz-modal-actions"><button class="iz-add-btn" style="flex:1;padding:12px;" '+(p.disponible==='NO'?'disabled':'')+' onclick="izAddFromModal()">Agregar al pedido</button><button class="iz-share-btn" title="Compartir" onclick="izShareProduct(window.__izModalProduct)">'+izIcon('share',15)+' Compartir</button></div></div>';
   document.getElementById('iz-modal').innerHTML = html;
   window.__izModalProduct = p;
   window.__izModalVariants = variants;
@@ -348,7 +381,7 @@ function izCard(p){
   var presHtml = multi
     ? '<div class="iz-variant-chips">'+variants.map(function(v,i){ return '<button type="button" class="iz-variant-chip'+(i===0?' active':'')+'" data-idx="'+i+'">'+(v.presentacion||('Opción '+(i+1)))+'</button>'; }).join('')+'</div>'
     : '<span class="iz-pres">'+variants[0].presentacion+'</span>';
-  div.innerHTML = '<div class="iz-card-imgwrap"><img src="'+p.imagen_url+'" loading="lazy"><button class="iz-share-icon" title="Compartir">🔗</button></div><div class="iz-card-body"><span class="iz-cat-tag">'+p.categoria+'</span><h3>'+p.nombre+'</h3>'+presHtml+'<span class="iz-price">'+(variants[0].precio||'')+'</span>'+(out?'<span class="iz-badge-out">Agotado</span>':'')+'<button class="iz-add-btn" '+(out?'disabled':'')+'>Agregar</button></div>';
+  div.innerHTML = '<div class="iz-card-imgwrap"><img src="'+p.imagen_url+'" loading="lazy"><button class="iz-share-icon" title="Compartir">'+izIcon('share',15)+'</button></div><div class="iz-card-body"><span class="iz-cat-tag">'+p.categoria+'</span><h3>'+p.nombre+'</h3>'+presHtml+'<span class="iz-price">'+(variants[0].precio||'')+'</span>'+(out?'<span class="iz-badge-out">Agotado</span>':'')+'<button class="iz-add-btn" '+(out?'disabled':'')+'>Agregar</button></div>';
   div.querySelector('img').addEventListener('click', function(){ izOpenModal(p); });
   div.querySelector('h3').addEventListener('click', function(){ izOpenModal(p); });
   div.querySelector('.iz-share-icon').addEventListener('click', function(e){ e.stopPropagation(); izShareProduct(p); });
@@ -381,7 +414,7 @@ function izShareUrl(slug, marcaId){
 function izToast(msg){
   var el = document.getElementById('iz-toast');
   if(!el){ el = document.createElement('div'); el.id='iz-toast'; document.body.appendChild(el); }
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.classList.add('show');
   clearTimeout(window.__izToastTimer);
   window.__izToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
@@ -395,7 +428,7 @@ function izShareProduct(p){
   if(navigator.share){
     navigator.share({title:p.nombre, text:text, url:url}).catch(function(){});
   } else if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){ izToast('Enlace copiado ✓'); }).catch(function(){ izToast(url); });
+    navigator.clipboard.writeText(url).then(function(){ izToast(izIcon('check',15)+' Enlace copiado'); }).catch(function(){ izToast(url); });
   } else {
     izToast(url);
   }
@@ -460,11 +493,11 @@ function izRenderMarcaChooser(){
       MARCA_ORDER.forEach(function(id){
         var m = MARCAS[id];
         var soon = !(m.catOrder && m.catOrder.length);
-        html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+'"><span class="iz-marca-emoji">'+m.emoji+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
+        html += '<a class="iz-marca-card iz-reveal'+(soon?' iz-marca-soon':'')+'" href="index.html?marca='+id+'" style="--m-color:'+m.color+';--m-color-osc:'+m.colorOsc+'"><span class="iz-marca-emoji">'+izIcon(m.icon,30)+'</span><h3>'+m.nombre+'</h3><span>'+m.tagline+'</span></a>';
       });
       html += '</div></div>';
 
-      html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
+      html += izTrustBandHtml();
 
       var destacados = data.filter(function(p){ return p.disponible!=='NO'; });
       var picked = [], seen = {};
@@ -491,7 +524,7 @@ function izRenderMarcaChooser(){
 // --- Marca sin contenido todavia (sin categorias/productos cargados) ---
 function izRenderComingSoon(marca){
   var root=document.getElementById('app-root');
-  root.innerHTML = '<div class="iz-comingsoon iz-fade"><span class="iz-emoji">'+marca.emoji+'</span><h1>'+marca.nombre+'</h1><p>Estamos preparando el catálogo de esta marca. Muy pronto vas a poder ver sus categorías y productos aquí.</p><a class="iz-cta" href="index.html">← Ver todas las marcas</a></div>';
+  root.innerHTML = '<div class="iz-comingsoon iz-fade"><span class="iz-emoji">'+izIcon(marca.icon,48)+'</span><h1>'+marca.nombre+'</h1><p>Estamos preparando el catálogo de esta marca. Muy pronto vas a poder ver sus categorías y productos aquí.</p><a class="iz-cta" href="index.html">← Ver todas las marcas</a></div>';
 }
 
 function izRenderHome(marca, data, carruselSlides, catImgs){
@@ -502,10 +535,10 @@ function izRenderHome(marca, data, carruselSlides, catImgs){
   // el home de cada marca arranca directo en la franja de confianza.
   var html = '';
 
-  var marcaHeroTitle = marca.logo ? '<img class="iz-marca-hero-logo" src="'+marca.logo+'" alt="'+marca.nombreCompleto+'">' : ('<span class="iz-marca-hero-emoji">'+marca.emoji+'</span><h1>'+marca.nombreCompleto+'</h1>');
+  var marcaHeroTitle = marca.logo ? '<img class="iz-marca-hero-logo" src="'+marca.logo+'" alt="'+marca.nombreCompleto+'">' : ('<span class="iz-marca-hero-emoji">'+izIcon(marca.icon,40)+'</span><h1>'+marca.nombreCompleto+'</h1>');
   html += '<div class="iz-marca-hero" style="--m-color:'+marca.color+';--m-color-osc:'+marca.colorOsc+'">'+marcaHeroTitle+'<p>'+marca.tagline+'</p></div>';
 
-  html += '<div class="iz-trust"><div class="iz-trust-item iz-reveal"><span>🌿</span><div><b>100% Natural</b><small>Ingredientes de origen vegetal</small></div></div><div class="iz-trust-item iz-reveal"><span>🤲</span><div><b>Elaboración artesanal</b><small>Producción propia en Bolivia</small></div></div><div class="iz-trust-item iz-reveal"><span>🚚</span><div><b>Envíos a todo el país</b><small>Coordinamos la entrega</small></div></div><div class="iz-trust-item iz-reveal"><span>💬</span><div><b>Atención personalizada</b><small>Pedidos directos por WhatsApp</small></div></div></div>';
+  html += izTrustBandHtml();
 
   html += '<div class="iz-section"><div class="iz-section-head iz-reveal"><h2>Explora por categoría</h2></div><div class="iz-cats">';
   izGetCategories(data, marca).forEach(function(cat){
@@ -604,7 +637,7 @@ function izRenderProductos(marca, data){
 
 function izRenderContacto(){
   var root=document.getElementById('app-root');
-  root.innerHTML = '<div class="iz-contact-wrap iz-fade"><h1>Contáctanos</h1><p>Escríbenos para consultas, pedidos especiales o mayoreo.</p><div class="iz-contact-card"><p style="font-size:15px;">💬 La forma más rápida de contactarnos es por WhatsApp.</p><a class="iz-cta" href="https://wa.me/'+WHATSAPP_NUMBER+'" target="_blank">Escribir por WhatsApp</a><p style="margin-top:22px;font-size:13px;color:#8a8570;">También puedes armar tu pedido desde el <a href="catalogo.html">catálogo</a> y enviarlo directamente por WhatsApp con el botón del carrito.</p></div></div>';
+  root.innerHTML = '<div class="iz-contact-wrap iz-fade"><h1>Contáctanos</h1><p>Escríbenos para consultas, pedidos especiales o mayoreo.</p><div class="iz-contact-card"><p style="font-size:15px;">'+izIcon('chat',17)+' La forma más rápida de contactarnos es por WhatsApp.</p><a class="iz-cta" href="https://wa.me/'+WHATSAPP_NUMBER+'" target="_blank">Escribir por WhatsApp</a><p style="margin-top:22px;font-size:13px;color:#8a8570;">También puedes armar tu pedido desde el <a href="catalogo.html">catálogo</a> y enviarlo directamente por WhatsApp con el botón del carrito.</p></div></div>';
 }
 
 function izInit(){
